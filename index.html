@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market ou Gold Token?</title>
+<style>
+:root{--bg:#121317;--panel:#1a1b20;--box:#23252b;--field:#111216;--line:#2e3036;--text:#f2f3f5;--muted:#aeb3bb;--label:#aeb3bb;--gold:#5865f2;--focus:#949cf7;--best-bg:#4752c4;--win:#23a559;--win-text:#57f287}
+*{box-sizing:border-box}
+body{margin:0;padding:20px 16px;background:var(--bg);color:var(--text);font:15px/1.4 "gg sans","Noto Sans","Segoe UI",system-ui,sans-serif}
+.app{max-width:1000px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{margin:0;font-size:22px}
+.pill{border:1px solid var(--gold);color:#dfe1ff;background:var(--box);border-radius:999px;padding:6px 14px;font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:18px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cfg{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+label.lb{display:block;font-size:12px;font-weight:700;color:var(--label);margin-bottom:6px;letter-spacing:.03em}
+.inp{width:100%;background:transparent;border:0;color:var(--text);font-size:16px;padding:12px;outline:none}
+.pricebox{display:flex;align-items:center;background:var(--field);border:1px solid var(--line);border-radius:8px;padding-right:12px}
+.pricebox:focus-within{border-color:var(--focus)}
+.gp{color:#949ba4;font-weight:700;margin-left:6px}
+select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:8px;color:var(--text);font-size:16px;padding:12px 10px}
+select:focus,button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--field);border-radius:10px;padding:4px;margin:18px 0 14px}
+.tab{background:transparent;border:0;color:var(--muted);font-weight:700;font-size:15px;padding:11px;cursor:pointer;border-radius:7px}
+.tab[aria-selected=true]{background:var(--gold);color:#fff}
+.row{display:grid;grid-template-columns:minmax(140px,1fr) minmax(130px,190px) auto;gap:14px;align-items:end;background:var(--box);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+.row:last-child{margin-bottom:0}
+.mat{display:flex;gap:12px;align-items:center;align-self:center}
+.ico{width:42px;height:42px;border-radius:8px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.ico img{width:32px;height:32px;image-rendering:pixelated}
+.mat b{display:block}
+.mat span{color:var(--muted);font-size:13px}
+.tg{display:flex;gap:6px}
+.opt{width:42px;height:42px;border-radius:8px;background:var(--field);border:1px solid var(--line);cursor:pointer;position:relative;opacity:.5;padding:4px;display:grid;place-items:center}
+.opt img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.opt[aria-pressed=true]{opacity:1;border-color:var(--gold);background:#383d7a}
+.opt[aria-pressed=true]::after{content:"✓";position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:var(--gold);color:#fff;font-size:11px;font-weight:800;line-height:16px}
+.results{display:grid;gap:12px;position:sticky;top:16px}
+.box{border-radius:12px;padding:16px 18px;border:1px solid var(--line)}
+.best{background:var(--best-bg);border-color:transparent;padding:22px}
+.best h3{margin:0 0 6px;color:#fff;font-size:15px}
+.big{font-size:38px;font-weight:800;line-height:1.1}
+.big small{font-size:16px;color:#dbdeff;font-weight:600}
+.best p{margin:10px 0 0;color:#e3e5ff;font-size:14px}
+.m,.t{background:var(--box);display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center}
+.box h4{margin:0;color:#dbdee1;font-weight:600}
+.box b{font-size:17px;text-align:right}
+.hi{width:20px;height:20px;vertical-align:-4px;image-rendering:pixelated}
+.diff{grid-column:1/-1;color:var(--muted);font-size:14px}
+.box.win{border-color:var(--win)}
+.box.win .diff{color:var(--win-text)}
+.foot{color:var(--muted);font-size:13px;padding:4px 4px 0}
+.foot strong{display:block;color:#dbdee1;margin-bottom:4px;font-size:14px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.results{position:static}}
+@media(max-width:560px){.cfg{grid-template-columns:1fr}.row{grid-template-columns:1fr auto}.row>div:nth-child(2){grid-column:1/-1;order:3}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <h1>Calculadora de Imbuements</h1>
+    <div class="pill" id="pill"></div>
+  </header>
+  <div class="layout">
+    <section class="panel">
+      <div class="cfg">
+        <div>
+          <label class="lb" for="tokenPrice">◆ Preço de 1 Gold Token</label>
+          <div class="pricebox"><input class="inp" id="tokenPrice" inputmode="numeric" value="20000"><span class="gp">gp</span></div>
+        </div>
+        <div>
+          <label class="lb" for="tier">TIER DESEJADO</label>
+          <select id="tier">
+        <option value="1">Basic (I)</option>
+        <option value="2">Intricate (II)</option>
+        <option value="3" selected>Powerful (III)</option>
+      </select>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div id="rows"></div>
+    </section>
+    <aside class="results">
+      <div class="box best"><h3>Melhor custo</h3><div class="big" id="bestVal"></div><p id="bestTxt"></p></div>
+      <div class="box m" id="boxM"><h4><img class="hi" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEdElEQVR4AcSVbUxbZRTH/325pVCghTIYIARBjZlGMqfJjMa5OEViXDT7Mo0mxn3YPi3osmQxmdG5JUuMWbLELVmyfdEvRoZTZ9wHIxnRmYHM8SISoBsbGy1dXxkdtLcv3v8t93ILfUO6rOmfe55zznPOr+d5aPV4wK+cAIIgJBTdD9asAGx88IVa7HzUIovrQkNkBGCz/U/bU/oRhH4qJbCGRVoANvio1Za2LCF2tFjAHCpt0iqcKwBYtGNj+ubauoSgmE9pY6uxUwBYaG9r+Wr2442HS2VxL7WqzVKyCsDN+59NPXMpnvebIO1NZbBYihN5b5ISVQDJ/t9vk36pZ1u9Wb4f+RYrCEAkrlP7RRNLturMYhQEQFvfqFuahtafyV4zgHb8bMIJVNtteR/DmgGU8SsgygSebGnMC2LNAPzUlALCCXDt9s3ykVMFA1A6KROorszv+6TgAMoEFKBcz5wAx68GcClYlLWO9vyVCWTdoAlmBTg1dg8NlVaUm00yRCYQ7fkrE5j1OVBrFdFYhaz/lxkBTjvCcvPKcguopuoKFaTvbuaJcAKG6B10d25DT+dWvL8VWSH0mmmo5snhOZQWmeAPzcPh9KjiOhaLgSIEpW5aNAYCfpgFYOrvqxg8173oBdZXIEGpjkVjBcDJkRA2NtfJ4YYqK4olkJbaKpw9BXy8pxS0GVxXXoJaWxkGQiZcDhgxPufH9ZAP9dIveffZ19D8zGNMk3V0J/D71y24cv65FdNIAfiizwtRjGHM5YMYi2Pc6cXsvQWM3nJj+644PvtqVrYZm/IEMTrtlhuYcQftm4wIS6cdCgN68Qau/TWG4Dxgk6bBpLvDt+Ed+BeCPjkN+ihpyQekxqJOFJPyBedQba/AE43rYTYJePyhajTX2FXV263gdFqbpEmJMzAYgF/6o6ixAA12YCGsQ+81I4amgQmJsdcBXHIs4JufAzj2DnDgzaV7oU+2T/1LkGHHTfjmRfDyTXkCMAkGuJwuTE674HR7cHvGg38mR9H2FNB1yI7fujbhfOdmTHmBg4dHMDjogkEHWEuStW/NAOEosOH157H9vRcRiSX9aQEY0kI0VNkw6fajsbEexXo9tpiNsl4pqURXP3DiWy96v+vHupf6MRQUsK9jCz4/3IZ3d7XCYpLifwr4skfA7o52XL5wBc6hEbaQlRGAUS0EJ0GIuroa9EbiEOOi9CkiUCDeOi3gxNgRbsOPP/XBPTWBqtoK7D7wsuxjrPXtX7HvzDx2fOqByw9pPkBWAO7UQpSXlWJcmkSRzQpH1Ih4XMCCmIAvkWx+cfoi+DryvYjNe26i4dU/UL+thy4wRgjmKs0ZyAnAJAWC98LtDWD0hhMDwRDO+efwQ2QOZyaOyQ2Ye2hkL9KJMUIw12QTElxTeQEwkRDpFAmIug8e+RBDF64zDZ9sOJ5WDDKHudzDNZU3AJMziQVHjo6rEFxrZTDp5Rhz6NfWKQgAC7IwG9Berph0aRljzvJYwQBYmA0o2or4pI+ivVz/AQAA//8O7A65AAAABklEQVQDAKsuEl+d+6I2AAAAAElFTkSuQmCC" alt=""> Só Market</h4><b id="mVal"></b><span class="diff" id="mDiff"></span></div>
+      <div class="box t" id="boxT"><h4><img class="hi" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACb0lEQVR4AeyWP0gcQRSHnylD2iApUgSbFKkkAcEukCIhNsHGIpaBWAeSdJIqRRDSpEgTSAgHgjaKNhaWh38KsVCE4wortVXBxnW/dzd7M7NztzPbiOKxv92dnTfvffPe29V7cs2/O4AbmYEsb5tByqfjj1oZyE5WJGvPydnaVKHpifigtmUtgPOdf7K7Pi+tw3Yh22nKfSpAxq4J7Af59G5MulmgPP5033EKQEbaTfAfi02xRYQ6ELEAGXUn7QSa/dWUiefD8v3Da3l4KXoPDHOpEDEAneDL3/AvBJ96O6z39gmgOhBVAJr23YrgBqQORAiAJlLRcHba7Z2Pj47Ko2evNHZz40ivnAZAqE9sbIUAhHrbDeenvQj+4Gnhqwqi+4YU9uYmCCCn+/qeY0Rd++2ceVs+xMjjJzpNY+pN4BQEOG9tOqbs2EjTzs6RY9UZAIHejL/sPKg4BwH8NV9+r4oRPXGx91/IEmofi4T0/mtD7o+88F2VxlEANJYRJTloteTicLvkjAeUy4hxlYIAH3829CvHYurXWC53ORB+qQjMGjQ5/dnpI56FFAT4uySC2C2LZmfGZGmrDMGckRN85o8THF/I2NrXEMBQbqBikYEgEz6E+btQCm59uPBh/HWv+aV3hAB6syJDOOgHId5vkp1bwRc7LxOb8Sx7wyoALEsQpifMe46R1jwxOOtiALBzIOgJ854vzM+JBs//QcGQr2bMzrFFsQDYOhDUH/FdQBhQqpTgrEkBwN6B4IERwemXfDyw5vm8c6QCFIsJaKuYSLypBcBOQ0qMreZ1AEjxIKnj2FMdgFjfUXa3H6AqDVcAAAD//9ySpy4AAAAGSURBVAMAmzNTUADzCWEAAAAASUVORK5CYII=" alt=""> Só Gold Token</h4><b id="tVal"></b><span class="diff" id="tDiff"></span></div>
+      <div class="foot">
+    <strong id="feeTxt"></strong>
+    Basic usa até 2 tokens, Intricate até 4 e Powerful até 6. A troca com a Yana é cumulativa: pode começar pelos primeiros materiais com token e terminar no Market, mas não pular um material anterior.
+  </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+// ====== CONFIG (ajuste aqui) ======
+const TOKENS_PER_MATERIAL = 2;                    // Yana: 2 Gold Tokens por material
+const SHRINE_FEE = {1: 50000, 2: 150000, 3: 250000}; // taxa do shrine por tier (confira os valores reais)
+const TIER_NAMES = {1:"Basic", 2:"Intricate", 3:"Powerful"};
+const ICONS = {
+  "Vampire Teeth": "data:image/webp;base64,UklGRqYAAABXRUJQVlA4TJkAAAAvH8AHEJ+gqG0kZ7X8gfa9e7YAUdq2EZR79p+zMLBQaSRJ0d4LYZB/JISARK48uXL+QwD9vL0AqIBQ2NLpZ8pxwHE6Kg+AhY4bbCUdBWwbSVI0fXzPkH+0uOu9GdH/CdDfCk60BaezrXgw9JqXEzPEMZUYO0YMAPuYUsaEo59tE1fZTLUtyJ69lBV5jGlGLimccuo4ZeSM/lkA",
+  "Bloody Pincers": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4TFEBAAAvH8AHEO/BuI0kKaVV7S5X/vERxA39gyDYtm0kSbv3OXT/FV0JV8KFEypk00aSJO/f4fFHdzA6nP9FAMq5Ozih8McAhAwDgSABKOQTQIT/K5coaSUYCJSFD8KA2BAwLAaKYUuFIphIK8CHEmKR9f0hDMiQACTZtlU1d+Purl9wd959/Mx/YuRLK2lG9H8C5G8NkAT0+/0uEBO8SqV7sd5sdACi8SqVLr3eersr+gw6I6JwqdbN6XQyvYNLezFZWgiFqc5WAMelg3/N34yqJVTtB0REgE6x8tyPdeFEQL7jtdLv3cZ/zW045Dc3l8o2lwVjNVRICvVl7tW8nBcahq8iAurUjVm8Fo7OkRB6LWRqgC6uOTO002P/2EPCYufVTOFarj4ejY+dD5dOgIQn0G6v2xuo/ehibIYgUcFxdDp11Fk4NkDiBAKrjloLEjff5X8RAA==",
+  "Piece of Dead Brain": "data:image/webp;base64,UklGRk4BAABXRUJQVlA4TEEBAAAvH8AHENfBKJIkRQ17jP4d3ptpbm0wDAAQje7m/yObJdtGkhQN7N495x/g++/y7/wHAAAgBBlbIRuzUOkBIQUtHZ+IBinzL/jAREwtDBXAwlEDOi0qZRf8R20//RW8AaEezdgLoTzrMpRNYnbim32a/00kKL9OUIqfTINkKnCQ7hK0JDrRJBKEhUiIZKm7/BV8Ze2H/Pyu+/S9r/wWQJJtW1VzN+6xi3/B5X6Pw/xnFnmPHs2I/k+A3FkBvPGzt+ko+GGfZwrF6twM8ME6ncBXOZ+kj7rt1nALWjCtrpfq/TN7qluAi4BQfiye3xb5CtQ8GLPXXbar1umk/bBVJ2zN9yVbT4v+YRmYIk5Bj+S60mzVCLcWNNwEOL2kthsAqx7ilXh60MC03UI8jdu2spUp4huiYzRsITdkZKY3EQC5LwIA",
+  "Rope Belt": "data:image/webp;base64,UklGRnQCAABXRUJQVlA4TGcCAAAvH8AHEPVAsbZtmfJ89g/u7pLc3d3d3d3daSx9zvn+L019l4EvgUodSdTpJCorIMGSJNu0dWxb65jX9ted/2h878PeECRJNm3N5fPb/35sfT5d2+ZB/yeAXEr5j8ABTIDGQh2DHYh/HHbL7Ar8q6FCbUlu6+vl5rWxeq1MHzvdY6LSOoowGzoLWAt1XhueGr3sLJUu23fRgqTihjEMuAHkUXA0yQbUnPtThbyW+NV2zGiqBQGKY3+9toraPCW1qqP44vizvP7ZnDy+Ch3HLUjMEZe39zc7tcQKBMY6jKXdfpSh1VU1HB8u5/P7R6pXxlhVhh+NgjSVP9oiOcv1Gab5Rb1V/UOc63hTEu96cbmYSdWQpLlY/I9ADBg94KQIggcPWXHZMUQDsVm0s87mBmjQcV8MRmXmuwMELP8QOfVCFP2P3qWsiB1UqyMltDiTE20++FmSU+une2fSEAxUNNH5atE8jz51/vd6O/dYRwVI/fYMDyEO3zkiASQKN8UyQGuFeg/bi7FSeLG2ZhKYgU7gty7I7dX2kdQzrYO31f2Uq8pIaa7utZnr5/L4dTl814KUEnruiqq7Sf45JeiQFFDQq4I0f9hK9UczCtAmJA2xWeLINaaRH8UNfdW571eG6GrhVqaO+mW0iPw5vOEuNaM/QY9ADt59HFHxLyrcQwUmULIRDLRXnv/0+FXdNIyiZBAku1s+IUNpWV3HB+YOTAjMn+e3yroAP9j3bgVFykXGwHc9aMdr/afUy7sikyNigKDD6foLAkABRfVkEoSw3/1UeA7IKRkNu2UFoTfgOYHvxgxBg19yPQEA",
+  "Silencer Claws": "data:image/webp;base64,UklGRqQAAABXRUJQVlA4TJgAAAAvH8AHELW4iW3bVZCNIWxgAh+Y+Dm353a7PDP/E06ntG0Dpv//ulGh2rZtGPf8f23W/k+AjuYNgGl4Ju/2MTIFvv8rE4CryqOBk9g1Fs51vXhxIcEIONcZu5DIxQi5YhdIoioMIWdcIEnYlWJQDGrixB7BqJ2cZ4yGGPVJahjqc8VowkZNdaJJfE4kMplPM4nIVCJTicl2JQ==",
+  "Some Grimeleech Wings": "data:image/webp;base64,UklGRsACAABXRUJQVlA4TLQCAAAvH8AHEP/juG0kRypVz+x57/L/XoD+bioNx5EkOUq1QGu+uIX/X1zQDMRGkhRJVdV0fOf0eYz/Az3/IUDgaVGaZNk0qytJj+k2iMoyb1g0ILg9b2rp3o9/4zN8WUIb/BwoM5IxBRSlQUAhNGjNETaUKGWxEMcajLAiC0ZACALhWIIQM+XfWDghVPDgGCT/ES9CWwwUGPrrqNrsKTqaHYpcqkvphZDjJMI05qivJvnEGZIDYlwxAxJL4iYla9EiITGLTbKRARGSMVIBJMRhkMAxQFhkcBwiXR8WACLXtNURBse4Bsn9/vS+tUwTW6bl2zLQdwGRTAzI9Pmlx/rl9/xngGjb2tkoXzW2bdu2bc8USTuu7Xfnn7zB/SL6r8BtG2VLjxk+Ial1AiQtTnC7SFvqb1cmDfK4Jrz9J6Rebtk7LtvUS+/8GoKsJe00D0LuehAaAfka6uHOMxLOQC4QJNCvebjntu2CxDOQvPvnJqyNHQ8dtW2RRNkZls8L2fXI+KzLU9zXtNi8lS1hV4zvqWDF6+PVuOyuaORN0jm/TmP8bhEMQNfy6fiXs7zBUL9t3o0pSIgGoddV+bjf7Cyvb1+KsTmCByo8BfXjdcW8P5qhCT13kbMH0RTdHa30Er3bHzD/ltcB61SojOSOzBQ6bs5yHPI7yltINNrHzrzLwzouymA+8DnEl04OTI7yl1NXdMVB82HoRwXyFx9PmTPwS/Btz2dXwRx/7k+yk1B2GTwMvKWFh45XrDiwP/0LMlYHZ0OnAui/g4pe5haeHJP8S0DNbHijjgrpO9lBKMomFEz9wphlvBBUxJBA4Cue4zeG3UiVszxSWwjkz/JyGYHVARB6Z3KKhJOVGC9vPuLPnCk0lZK6L1nE/BHhLFD/4UsiuOIqIzT8rSIuqUyxBgMBRiDHNBXkCA==",
+  "Protective Charm": "data:image/webp;base64,UklGRuwAAABXRUJQVlA4TN8AAAAvH8AHED+BqG0bRSc/CuD4ozlYB4RNG0mSvO9VeOHxR3LQGLWNJMlzhz+qhbTP+Y9w9r7Ym/tFJEBEfh+CCEiKRQIFEFFAIkBZKKAIAivv/8CVJMmmNX2Nc2373v2v8Wnm6Tui/xNA/zYghFRBBPPWC21z6kEksINUAmHhe5dIHw3+aEBgKSY1Kj6U/ZnaQWuAbY3GoF4TxTcFV26VR2CAa6jKI/WzpWRz5rXzjNEFcaOsVdrbID4z7oYAJGAU9ZpKEK587zWRxm9OXWSI/LOCxFIbwy7SDLoaJQi39F8DAA==",
+  "Sabretooth": "data:image/webp;base64,UklGRhQBAABXRUJQVlA4TAgBAAAvH8AHEMfBKJIkKRVEPnYBCQjAvwoknUIYRZIkJfeCksET/yqQxNNpI0mSFPtewjblTD1TDzac/wjLvp/vGAUKGGVEogVEJHsZrYIxWhmjPwVIAYnIygABv4yAJBmR9WMUSCD5oTWkSCDj/jmer+v7gStJklRl+rm7Cw7Lwx3uf7od7Dui/xNA/ynAABBBZ4DWW/Bijrz3o9KVh/jRFFUbSoP2FE0+mgXyxvc6n84yUxbM4yodi8RSpCXHohOpCpBcGMdXt2wdkGwkYpjMI5C8+WaYdiCGYbPYpAywxGa5ATFku/UmZhG7zQbEsb8cIp7deQtiuV4drhuI57zkOtlcGxCTw0Wgnww=",
+  "Vexclaw Talon": "data:image/webp;base64,UklGRhoBAABXRUJQVlA4TA4BAAAvH8AHEJ+gqJEkZd4Lxwz+NZyI87NSFLeNpCwcPpmx/yuSUSRJinqZmb/r38nGWbqY/wAAALUz8zEgMJSMpSF/ZLUcq5K64jsweFuwDdQpt14tHG8//38A27aVsJGUVr0JVkj+/2fVrnVtZ94j+s/AbSNFmXThGD+R/k3JUjujCPfW6FVjFFNvZibCZR3086zMQJYK9x7TZUDu5L2Hn6gw45TVA6ikaRpuhooBr1XUDb27a6s6YV3RjQ7uM0rzxqHehvRHIEdVQPFINDbY6nvOZaBCJ8KG5Qlh44YpCoRcOzIoShLRMwTIr1IqxWUGSSJX4M6SKO8s6wlucpN5tQszXHN9yL+WnGX7/0z/qxI="
+};
+const IMBUEMENTS = {
+  "Vampirism": [["Vampire Teeth",25],["Bloody Pincers",15],["Piece of Dead Brain",5]],
+  "Void":      [["Rope Belt",25],["Silencer Claws",25],["Some Grimeleech Wings",5]],
+  "Strike":    [["Protective Charm",20],["Sabretooth",25],["Vexclaw Talon",5]]
+};
+// ==================================
+
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString("pt-BR");
+const num = v => parseInt(String(v).replace(/\D/g,""),10) || 0;
+
+let current = "Vampirism";
+const prices = {};      // chave: "Imbuement|i" -> preço
+let manualK = null;     // null = automático (melhor custo)
+
+$("pill").textContent = `Yana: ${TOKENS_PER_MATERIAL} Gold Tokens por material`;
+
+function renderTabs(){
+  $("tabs").innerHTML = "";
+  Object.keys(IMBUEMENTS).forEach(name=>{
+    const b = document.createElement("button");
+    b.className = "tab"; b.role = "tab"; b.textContent = name;
+    b.setAttribute("aria-selected", name===current);
+    b.onclick = ()=>{ current = name; manualK = null; renderTabs(); renderRows(); calc(); };
+    $("tabs").appendChild(b);
+  });
+}
+
+function renderRows(){
+  const n = +$("tier").value;
+  const mats = IMBUEMENTS[current].slice(0,n);
+  $("rows").innerHTML = "";
+  mats.forEach(([name,qty],i)=>{
+    const key = current+"|"+i;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <div class="mat"><div class="ico"><img src="${ICONS[name]}" alt=""></div><div><b>${qty}× ${name}</b><span>${["Basic","Intricate","Powerful"][i]}</span></div></div>
+      <div><label class="lb" for="p${i}">PREÇO UNITÁRIO NO MARKET</label>
+        <div class="pricebox"><input class="inp" id="p${i}" inputmode="numeric" placeholder="preço" value="${prices[key]||""}"><span class="gp">gp</span></div></div>
+      <div class="tg">
+        <button class="opt" data-i="${i}" data-m="market" title="Comprar no Market"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEdElEQVR4AcSVbUxbZRTH/325pVCghTIYIARBjZlGMqfJjMa5OEViXDT7Mo0mxn3YPi3osmQxmdG5JUuMWbLELVmyfdEvRoZTZ9wHIxnRmYHM8SISoBsbGy1dXxkdtLcv3v8t93ILfUO6rOmfe55zznPOr+d5aPV4wK+cAIIgJBTdD9asAGx88IVa7HzUIovrQkNkBGCz/U/bU/oRhH4qJbCGRVoANvio1Za2LCF2tFjAHCpt0iqcKwBYtGNj+ubauoSgmE9pY6uxUwBYaG9r+Wr2442HS2VxL7WqzVKyCsDN+59NPXMpnvebIO1NZbBYihN5b5ISVQDJ/t9vk36pZ1u9Wb4f+RYrCEAkrlP7RRNLturMYhQEQFvfqFuahtafyV4zgHb8bMIJVNtteR/DmgGU8SsgygSebGnMC2LNAPzUlALCCXDt9s3ykVMFA1A6KROorszv+6TgAMoEFKBcz5wAx68GcClYlLWO9vyVCWTdoAlmBTg1dg8NlVaUm00yRCYQ7fkrE5j1OVBrFdFYhaz/lxkBTjvCcvPKcguopuoKFaTvbuaJcAKG6B10d25DT+dWvL8VWSH0mmmo5snhOZQWmeAPzcPh9KjiOhaLgSIEpW5aNAYCfpgFYOrvqxg8173oBdZXIEGpjkVjBcDJkRA2NtfJ4YYqK4olkJbaKpw9BXy8pxS0GVxXXoJaWxkGQiZcDhgxPufH9ZAP9dIveffZ19D8zGNMk3V0J/D71y24cv65FdNIAfiizwtRjGHM5YMYi2Pc6cXsvQWM3nJj+644PvtqVrYZm/IEMTrtlhuYcQftm4wIS6cdCgN68Qau/TWG4Dxgk6bBpLvDt+Ed+BeCPjkN+ihpyQekxqJOFJPyBedQba/AE43rYTYJePyhajTX2FXV263gdFqbpEmJMzAYgF/6o6ixAA12YCGsQ+81I4amgQmJsdcBXHIs4JufAzj2DnDgzaV7oU+2T/1LkGHHTfjmRfDyTXkCMAkGuJwuTE674HR7cHvGg38mR9H2FNB1yI7fujbhfOdmTHmBg4dHMDjogkEHWEuStW/NAOEosOH157H9vRcRiSX9aQEY0kI0VNkw6fajsbEexXo9tpiNsl4pqURXP3DiWy96v+vHupf6MRQUsK9jCz4/3IZ3d7XCYpLifwr4skfA7o52XL5wBc6hEbaQlRGAUS0EJ0GIuroa9EbiEOOi9CkiUCDeOi3gxNgRbsOPP/XBPTWBqtoK7D7wsuxjrPXtX7HvzDx2fOqByw9pPkBWAO7UQpSXlWJcmkSRzQpH1Ih4XMCCmIAvkWx+cfoi+DryvYjNe26i4dU/UL+thy4wRgjmKs0ZyAnAJAWC98LtDWD0hhMDwRDO+efwQ2QOZyaOyQ2Ye2hkL9KJMUIw12QTElxTeQEwkRDpFAmIug8e+RBDF64zDZ9sOJ5WDDKHudzDNZU3AJMziQVHjo6rEFxrZTDp5Rhz6NfWKQgAC7IwG9Berph0aRljzvJYwQBYmA0o2or4pI+ivVz/AQAA//8O7A65AAAABklEQVQDAKsuEl+d+6I2AAAAAElFTkSuQmCC" alt="Market"></button>
+        <button class="opt" data-i="${i}" data-m="token" title="Trocar por Gold Token"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACb0lEQVR4AeyWP0gcQRSHnylD2iApUgSbFKkkAcEukCIhNsHGIpaBWAeSdJIqRRDSpEgTSAgHgjaKNhaWh38KsVCE4wortVXBxnW/dzd7M7NztzPbiOKxv92dnTfvffPe29V7cs2/O4AbmYEsb5tByqfjj1oZyE5WJGvPydnaVKHpifigtmUtgPOdf7K7Pi+tw3Yh22nKfSpAxq4J7Af59G5MulmgPP5033EKQEbaTfAfi02xRYQ6ELEAGXUn7QSa/dWUiefD8v3Da3l4KXoPDHOpEDEAneDL3/AvBJ96O6z39gmgOhBVAJr23YrgBqQORAiAJlLRcHba7Z2Pj47Ko2evNHZz40ivnAZAqE9sbIUAhHrbDeenvQj+4Gnhqwqi+4YU9uYmCCCn+/qeY0Rd++2ceVs+xMjjJzpNY+pN4BQEOG9tOqbs2EjTzs6RY9UZAIHejL/sPKg4BwH8NV9+r4oRPXGx91/IEmofi4T0/mtD7o+88F2VxlEANJYRJTloteTicLvkjAeUy4hxlYIAH3829CvHYurXWC53ORB+qQjMGjQ5/dnpI56FFAT4uySC2C2LZmfGZGmrDMGckRN85o8THF/I2NrXEMBQbqBikYEgEz6E+btQCm59uPBh/HWv+aV3hAB6syJDOOgHId5vkp1bwRc7LxOb8Sx7wyoALEsQpifMe46R1jwxOOtiALBzIOgJ854vzM+JBs//QcGQr2bMzrFFsQDYOhDUH/FdQBhQqpTgrEkBwN6B4IERwemXfDyw5vm8c6QCFIsJaKuYSLypBcBOQ0qMreZ1AEjxIKnj2FMdgFjfUXa3H6AqDVcAAAD//9ySpy4AAAAGSURBVAMAmzNTUADzCWEAAAAASUVORK5CYII=" alt="Gold Token"></button>
+      </div>`;
+    row.querySelector("input").oninput = e=>{ prices[key] = num(e.target.value) || ""; calc(); };
+    row.querySelectorAll(".opt").forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = +btn.dataset.i;
+        manualK = btn.dataset.m==="token" ? i+1 : i; // cumulativo: prefixo com token
+        calc();
+      };
+    });
+    $("rows").appendChild(row);
+  });
+}
+
+function calc(){
+  const n = +$("tier").value;
+  const tp = num($("tokenPrice").value);
+  const mats = IMBUEMENTS[current].slice(0,n);
+  const marketCost = mats.map(([,qty],i)=> qty * (num(prices[current+"|"+i])));
+  const tokenCost = mats.map(()=> TOKENS_PER_MATERIAL * tp);
+  const fee = SHRINE_FEE[n];
+
+  // k = quantos primeiros materiais vão por token
+  const total = k => fee + tokenCost.slice(0,k).reduce((a,b)=>a+b,0) + marketCost.slice(k).reduce((a,b)=>a+b,0);
+  let bestK = 0;
+  for(let k=1;k<=n;k++) if(total(k) < total(bestK)) bestK = k;
+
+  const allMarket = total(0), allToken = total(n), best = total(bestK);
+  const k = manualK===null ? bestK : Math.min(manualK,n);
+
+  document.querySelectorAll(".opt").forEach(b=>{
+    const i = +b.dataset.i, isTok = i < k;
+    b.setAttribute("aria-pressed", b.dataset.m==="token" ? isTok : !isTok);
+  });
+
+  $("bestVal").innerHTML = `${fmt(best)} <small>gp</small>`;
+  $("bestTxt").textContent =
+    bestK===0 ? "Comprar todos os materiais no Market." :
+    bestK===n ? "Trocar todos os materiais por Gold Token com a Yana." :
+    `Trocar os ${bestK} primeiros materiais por Gold Token e comprar o resto no Market.`;
+  if(manualK!==null) $("bestTxt").textContent += ` (Seu mix: ${fmt(total(k))} gp)`;
+
+  $("mVal").textContent = fmt(allMarket)+" gp";
+  $("tVal").textContent = fmt(allToken)+" gp";
+  const d = (v)=> v===best ? "menor custo" : "+"+fmt(v-best)+" gp";
+  $("mDiff").textContent = d(allMarket);
+  $("tDiff").textContent = d(allToken);
+  $("boxM").classList.toggle("win", allMarket===best);
+  $("boxT").classList.toggle("win", allToken===best);
+  $("feeTxt").textContent = `Taxa do shrine inclusa: ${fmt(fee)} gp.`;
+}
+
+$("tokenPrice").oninput = ()=>{ manualK=null; calc(); };
+$("tier").onchange = ()=>{ manualK=null; renderRows(); calc(); };
+
+renderTabs(); renderRows(); calc();
+</script>
+</body>
+</html>
